@@ -1,11 +1,13 @@
 package com.promotion_engine.promotions;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
+
+import com.promotion_engine.common.PromotionProperties;
+import com.promotion_engine.common.PromotionsConstant;
 
 public class MultipleItemsSameSKUPromotion implements Promotions {
+	
+	PromotionProperties properties = new PromotionProperties();
 
 	@Override
 	public int applyPromotionAndGetTotal(char skuId, int quantity, int price) throws IOException {
@@ -28,37 +30,16 @@ public class MultipleItemsSameSKUPromotion implements Promotions {
 
 	private int fetchPromotionPrice(char skuId) throws IOException {
 
-		String priceValue = getPropValues("promotions_sameSKUPrice.properties", Character.toString(skuId));
+		String priceValue = properties.getPropValues(PromotionsConstant.SAME_SKU_PRICE_FILE, Character.toString(skuId));
 		return Integer.parseInt(priceValue);
 	}
 
 	private int fetchPromotionQuantity(char skuId) throws IOException {
 
-		String promotionQuantity = getPropValues("promotions_sameSKUQuantity.properties", Character.toString(skuId));
+		String promotionQuantity = properties.getPropValues(PromotionsConstant.SAME_SKU_QUANTITY_FILE, Character.toString(skuId));
 		return Integer.parseInt(promotionQuantity);
 	}
 
-	public String getPropValues(String fileName, String skuId) throws IOException {
-		
-		InputStream inputStream = null;
-		Properties prop = new Properties();
-		
-		try {
-			String propFileName = fileName;
- 
-			inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
- 
-			if (inputStream != null) {
-				prop.load(inputStream);
-			} else {
-				throw new FileNotFoundException("Property file '" + propFileName + "' not found in the classpath");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			inputStream.close();
-		}
-		return prop.getProperty(skuId);
-	}
+	
 
 }
