@@ -23,7 +23,8 @@ public class MultipleItemsSameSKUPromotion implements Promotions {
 			if (noPromotionQuantity == 0) {
 				promotionPrice = (item.getQuantity() / fetchPromotionQuantity(item.getSkuId()))
 						* fetchPromotionPrice(item.getSkuId());
-				total += promotionPrice;
+				
+				total += (promotionPrice != 0 ? promotionPrice : item.getQuantity() * item.getPrice());
 			} else {
 				promotionPrice = (item.getQuantity() / fetchPromotionQuantity(item.getSkuId()))
 						* fetchPromotionPrice(item.getSkuId());
@@ -37,14 +38,20 @@ public class MultipleItemsSameSKUPromotion implements Promotions {
 	private int fetchPromotionPrice(char skuId) throws IOException {
 
 		String priceValue = properties.getPropValues(PromotionsConstant.SAME_SKU_PRICE_FILE, Character.toString(skuId));
-		return Integer.parseInt(priceValue);
+		if(priceValue != null)
+			return Integer.parseInt(priceValue);
+		else
+			return 0;
 	}
 
 	private int fetchPromotionQuantity(char skuId) throws IOException {
 
 		String promotionQuantity = properties.getPropValues(PromotionsConstant.SAME_SKU_QUANTITY_FILE,
 				Character.toString(skuId));
-		return Integer.parseInt(promotionQuantity);
+		if(promotionQuantity != null) 
+			return Integer.parseInt(promotionQuantity);
+		else
+			return 1;
 	}
 
 }
